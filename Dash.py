@@ -84,8 +84,33 @@ start_date = st.sidebar.date_input("Data Inicial", data['Data'].min())
 end_date = st.sidebar.date_input("Data Final", data['Data'].max())
 filtered_data = data[(data['Data'] >= pd.Timestamp(start_date)) & (data['Data'] <= pd.Timestamp(end_date))]
 
-# Exibir dados filtrados com formatação BR
-st.write("Dados Filtrados:")
+# Filtro de commodities
+st.sidebar.header("Filtros de Commodities")
+selected_commodities = st.sidebar.multiselect(
+    "Selecione as Commodities",
+    options=["Soja", "Milho", "Trigo"],
+    default=["Soja", "Milho", "Trigo"]  # Selecionando as commodities por padrão
+)
+
+# Filtro de valores de Dólar (Compra ou Venda)
+st.sidebar.header("Filtros de Dólar")
+selected_dollar = st.sidebar.selectbox(
+    "Selecione o Tipo de Dólar",
+    options=["Dólar Compra", "Dólar Venda"],
+    index=0  # Dólar Compra selecionado por padrão
+)
+
+# Aplicar os filtros nos dados
+filtered_data = data[
+    (data['Data'] >= pd.Timestamp(start_date)) & 
+    (data['Data'] <= pd.Timestamp(end_date))
+]
+
+# Aplicar o filtro de commodities
+filtered_data = filtered_data[selected_commodities + [selected_dollar]]
+
+# Exibir os dados filtrados
+st.write("Dados Filtrados com Filtros Adicionais:")
 filtered_data_display = filtered_data.copy()
 filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substituir para exibição
 st.dataframe(filtered_data_display.drop(columns=['Data BR']))
