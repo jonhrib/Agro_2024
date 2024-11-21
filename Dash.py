@@ -116,11 +116,16 @@ filtered_data_by_year_month = filtered_data[
     (filtered_data['Data'].dt.month_name() == selected_month)
 ]
 
+# Verifica se as commodities selecionadas existem no DataFrame
+valid_commodities = [commodity for commodity in commodities if commodity in filtered_data_by_year_month.columns]
+
 # Aplica o filtro de commodities
-filtered_commodities = filtered_data_by_year_month[commodities]
+filtered_commodities = filtered_data_by_year_month[valid_commodities]
+
+# Colunas a serem exibidas
+columns_to_show = ['Data', 'Dólar Compra', 'Dólar Venda'] + valid_commodities
 
 # Exibe as colunas Data, Dólar Compra e Dólar Venda junto com os dados filtrados
-columns_to_show = ['Data', 'Dólar Compra', 'Dólar Venda'] + commodities
 st.write("Dados Filtrados com Dólar de Compra e Venda:")
 st.dataframe(filtered_commodities[columns_to_show])
 
