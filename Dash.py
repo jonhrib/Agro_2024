@@ -118,6 +118,7 @@ st.write("Dados Filtrados (Commodities Selecionadas):")
 filtered_data_display = filtered_data_commodities.copy()
 filtered_data_display['Data'] = filtered_data_display['Data'].dt.strftime('%d/%m/%Y')  # Formato dd/mm/aaaa para exibição
 st.dataframe(filtered_data_display)  # Exibir tabela com data, commodities e dólar
+st.write("Fontes: Cocamar Paraná e Banco Central do Brasil")
 
 # Seleção de visualização
 st.sidebar.header("Visualizações")
