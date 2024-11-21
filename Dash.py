@@ -60,7 +60,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-st.title("Dashboard Interativo: O Agro aplicado")
+st.title("Dashboard Interativo: O Agro Aplicado")
 
 # Carrega os dados
 file_path = "https://github.com/jonhrib/Agro_2024/raw/refs/heads/main/data/ATUALIZA%C3%87%C3%95ES_Final.xlsx"
