@@ -50,6 +50,15 @@ def export_to_pdf(dataframe, filename="dados_agro.pdf"):
     temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     pdf.output(temp_pdf.name)
     return temp_pdf.name
+    
+st.markdown("""
+    <style>
+        body {
+            background-color: #4CAF50;  /* Cor verde */
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 
 st.title("Dashboard Interativo: O Agro aplicado")
 
