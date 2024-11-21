@@ -98,7 +98,7 @@ filtered_data_commodities = filtered_data[['Data'] + commodities_selected]
 # Exibir dados filtrados com formatação BR
 st.write("Dados Filtrados (Commodities Selecionadas):")
 filtered_data_display = filtered_data_commodities.copy()
-filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substituir para exibição
+filtered_data_display['Data'] = filtered_data_display['Data']  # Substituir para exibição
 st.dataframe(filtered_data_display.drop(columns=['Data']))  # Exibir tabela sem a coluna de data em BR
 
 # Exibir dados filtrados com formatação BR
