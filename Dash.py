@@ -84,6 +84,14 @@ start_date = st.sidebar.date_input("Data Inicial", data['Data'].min())
 end_date = st.sidebar.date_input("Data Final", data['Data'].max())
 filtered_data = data[(data['Data'] >= pd.Timestamp(start_date)) & (data['Data'] <= pd.Timestamp(end_date))]
 
+# Filtro para selecionar as commodities a serem exibidas
+st.sidebar.header("Seleção de Commodities")
+commodities_selected = st.sidebar.multiselect(
+    "Escolha as commodities para exibir",
+    options=['Soja', 'Milho', 'Trigo'],
+    default=['Soja', 'Milho', 'Trigo']  # Seleção padrão de todas as commodities
+)
+
 # Exibir dados filtrados com formatação BR
 st.write("Dados Filtrados:")
 filtered_data_display = filtered_data.copy()
@@ -95,14 +103,6 @@ st.sidebar.header("Visualizações")
 visualization_type = st.sidebar.selectbox(
     "Selecione o tipo de visualização",
     ["Correlação", "Médias Mensais", "Média do Dólar", "Tendências", "Exportação de Dados"]
-)
-
-# Filtro para selecionar as commodities a serem exibidas
-st.sidebar.header("Seleção de Commodities")
-commodities_selected = st.sidebar.multiselect(
-    "Escolha as commodities para exibir",
-    options=['Soja', 'Milho', 'Trigo'],
-    default=['Soja', 'Milho', 'Trigo']  # Seleção padrão de todas as commodities
 )
 
 # Visualização: Correlação
