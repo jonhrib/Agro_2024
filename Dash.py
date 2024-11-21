@@ -128,6 +128,7 @@ filtered_data_display.rename(
     },
     inplace=True
 )
+st.dataframe(filtered_data_display)  # Exibir tabela com data, commodities e dólar
 st.write("Fontes: Cocamar Paraná e Banco Central do Brasil")
 
 # Seleção de visualização
