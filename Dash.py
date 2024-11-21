@@ -33,7 +33,7 @@ def export_to_pdf(dataframe, filename="dados_agro.pdf"):
 
     # Cria cabeçalho da tabela
     pdf.set_font("Arial", size=10, style="B")
-    col_width = (page_width - 4) / len(dataframe.columns)  # Largura das células, considerando as margens
+    col_width = (page_width - 4) / len(dataframe.columns)  # Largura das células, considerando as margens de 2 centímetros cada
     for col in dataframe.columns:
         pdf.cell(col_width, 10, str(col), border=1, align='C')
         
@@ -51,11 +51,10 @@ def export_to_pdf(dataframe, filename="dados_agro.pdf"):
     pdf.output(temp_pdf.name)
     return temp_pdf.name
 
-# Exemplo de uso no seu código Streamlit
 st.title("Dashboard Interativo: O Agro aplicado")
 
 # Carrega os dados
-file_path = "https://github.com/jonhrib/Agro_2024/raw/refs/heads/main/data/ATUALIZA%C3%87%C3%95ES_Final.xlsx"  # Substitua pelo caminho correto
+file_path = "https://github.com/jonhrib/Agro_2024/raw/refs/heads/main/data/ATUALIZA%C3%87%C3%95ES_Final.xlsx"
 data = pd.read_excel(file_path, sheet_name="Página1")
 
 # Renomea colunas (ajustar conforme necessário)
@@ -159,7 +158,7 @@ if visualization_type == "Médias Mensais":
     ax.legend(title="Categorias", fontsize=10)
     ax.grid(axis='y', linestyle='--', alpha=0.7)
     
-    # Exibi o gráfico na aplicação
+    # Exibe o gráfico na aplicação
     st.pyplot(fig)
 
     # Salva o gráfico como PDF
@@ -200,7 +199,7 @@ elif visualization_type == "Média do Dólar":
     ax.set_ylabel("Valor Médio (R$)", fontsize=12)
     ax.legend(title="Tipo de Dólar", bbox_to_anchor=(1.05, 1), loc='upper left')
     
-    # Exibi o gráfico na aplicação
+    # Exibe o gráfico na aplicação
     st.pyplot(fig)
 
     # Salva o gráfico como PDF
@@ -229,17 +228,17 @@ elif visualization_type == "Tendências":
         .reset_index()
     )
 
-    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
+    # Ajusta exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
     monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
 
-    # Visualizar as tendências mensais no gráfico
+    # Visualiza as tendências mensais no gráfico
     st.line_chart(monthly_means.set_index('Ano-Mês'))
 
 # Visualização: Exportação de Dados
 elif visualization_type == "Exportação de Dados":
     st.subheader("Exportação de Dados")
     
-    # Exportar dados como CSV
+    # Exporta dados como CSV
     csv_data = filtered_data_display.to_csv(index=False)
     st.download_button(
         label="Baixar Dados Filtrados como CSV",
@@ -248,13 +247,13 @@ elif visualization_type == "Exportação de Dados":
         mime="text/csv"
     )
     
-    # Exportar dados como PDF
+    # Exporta dados como PDF
     if st.button("Exportar dados para PDF"):
         if filtered_data_display.empty:
             st.error("Não há dados para exportar!")
         else:
             # Passando o dataframe correto para a função
-            pdf_file = export_to_pdf(filtered_data_display)  # Certifique-se de que filtered_data_display contém os dados corretos
+            pdf_file = export_to_pdf(filtered_data_display)
             with open(pdf_file, "rb") as pdf:
                 st.download_button(
                     label="Baixar PDF",
