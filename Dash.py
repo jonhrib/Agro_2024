@@ -72,7 +72,7 @@ data = data.rename(columns=columns_mapping)
 
 # Conversão e formatação das datas
 data['Data'] = pd.to_datetime(data['Data'], errors='coerce')
-data['Data BR'] = data['Data'].dt.strftime('%d/%m/%Y')  # Formato brasileiro
+data['Data BR'] = data['Data'].dt.strftime('%d/%m/%Y')  # Formato brasileiro: dd/mm/aaaa
 
 # Limpeza e conversão de dados
 for col in ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']:
@@ -98,7 +98,7 @@ filtered_data_commodities = filtered_data[['Data'] + commodities_selected + ['D�
 # Exibir dados filtrados com formatação BR
 st.write("Dados Filtrados (Commodities Selecionadas):")
 filtered_data_display = filtered_data_commodities.copy()
-filtered_data_display['Data'] = filtered_data_display['Data']  # Substituir para exibição
+filtered_data_display['Data'] = filtered_data_display['Data'].dt.strftime('%d/%m/%Y')  # Formato dd/mm/aaaa para exibição
 st.dataframe(filtered_data_display)  # Exibir tabela com data, commodities e dólar
 
 # Seleção de visualização
@@ -175,18 +175,18 @@ if visualization_type == "Médias Mensais":
     st.pyplot(fig)
 
     # Salvar o gráfico como PDF
-    pdf_path = "MédiasMensais_De_Commodities_E_Dólar.pdf"
+    pdf_path = "MédiasMensais_Commodities_e_Dólar.pdf"
     plt.savefig(pdf_path, format="pdf")
     st.download_button(
         label="Baixar Médias Mensais em PDF",
         data=open(pdf_path, "rb"),
-        file_name="MédiasMensais_De_Commodities_E_Dólar.pdf",
+        file_name="MédiasMensais_Commodities_e_Dólar.pdf",
         mime="application/pdf"
     )
 
-# Visualização: Média do Dólar em barras
-elif visualization_type == "Média do Dólar":
-    st.subheader("Média Mensal do Dólar")
+# Visualização: Média do Dólar
+if visualization_type == "Média do Dólar":
+    st.subheader("Média Mensal do Dólar - Compra e Venda")
     
     # Adicionar coluna 'Ano-Mês' com períodos mensais
     filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
