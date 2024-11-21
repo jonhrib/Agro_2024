@@ -94,7 +94,7 @@ end_date = st.sidebar.date_input("Data de término", data['Data'].max())
 # Filtra os dados de acordo com o intervalo de datas
 filtered_data = data[(data['Data'] >= pd.to_datetime(start_date)) & (data['Data'] <= pd.to_datetime(end_date))]
 
-# Filtro por Commodities
+# Filtros adicionais
 st.sidebar.header("Filtros Adicionais")
 
 # Filtro por commodities
@@ -103,13 +103,6 @@ commodities = st.sidebar.multiselect(
     options=['Soja', 'Milho', 'Trigo'],
     default=['Soja', 'Milho', 'Trigo']
 )
-
-# Filtro por intervalo de valores para as commodities
-min_value = st.sidebar.number_input("Valor Mínimo das Commodities", min_value=0, value=0)
-max_value = st.sidebar.number_input("Valor Máximo das Commodities", min_value=0, value=1000)
-
-# Filtro para o tipo de Dólar
-dollar_type = st.sidebar.radio("Selecione o Tipo de Dólar", ["Dólar Compra", "Dólar Venda"])
 
 # Filtro por Ano
 years = filtered_data['Data'].dt.year.unique()
@@ -124,48 +117,12 @@ filtered_data_by_year_month = filtered_data[
     (filtered_data['Data'].dt.month_name() == selected_month)
 ]
 
-# Aplica o filtro de commodities e valores
-filtered_commodities = filtered_data_by_year_month[
-    (filtered_data_by_year_month[commodities] >= min_value) & 
-    (filtered_data_by_year_month[commodities] <= max_value)
-]
+# Aplica o filtro de commodities
+filtered_commodities = filtered_data_by_year_month[commodities]
 
-# Aplica o filtro de tipo de Dólar
-filtered_data_dollar = filtered_commodities[filtered_commodities[dollar_type] > 0]
-
-# Visualização dos dados filtrados
+# Exibe os dados filtrados
 st.write("Dados Filtrados:")
-st.dataframe(filtered_data_dollar)
-
-# Gerar gráficos
-st.header("Gráficos das Commodities e Dólar")
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.lineplot(data=filtered_data_dollar, x="Data", y="Soja", label="Soja", ax=ax)
-sns.lineplot(data=filtered_data_dollar, x="Data", y="Milho", label="Milho", ax=ax)
-sns.lineplot(data=filtered_data_dollar, x="Data", y="Trigo", label="Trigo", ax=ax)
-plt.title("Preços das Commodities ao Longo do Tempo")
-plt.xlabel("Data")
-plt.ylabel("Preço (R$)")
-plt.legend()
-st.pyplot(fig)
-
-# Gerar o PDF com os gráficos
-if st.button('Gerar PDF'):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    
-    pdf.cell(200, 10, txt="Relatório de Análise de Commodities e Dólar", ln=True, align="C")
-    
-    pdf.cell(200, 10, txt=f"Período: {start_date} a {end_date}", ln=True, align="L")
-    
-    # Salvar gráfico gerado no PDF
-    fig.savefig("/mnt/data/commodity_prices.png")
-    pdf.image("/mnt/data/commodity_prices.png", x=10, y=30, w=180)
-
-    pdf.output("/mnt/data/relatorio_completo.pdf")
-    st.success("PDF gerado com sucesso! Você pode baixá-lo abaixo.")
-    st.download_button("Baixar PDF", "/mnt/data/relatorio_completo.pdf")
+st.dataframe(filtered_commodities)
 
 # Exibe dados filtrados com formatação BR
 #st.write("Dados Filtrados:")
