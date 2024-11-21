@@ -79,8 +79,8 @@ for col in ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']:
     data[col] = pd.to_numeric(data[col], errors='coerce')
 
 st.markdown("**Dados advindos do Projeto Agrícola Unespar - 2024**")
-st.markdown("**Coordenador: Prof. Luiz Jairo Dallaqua**") 
-st.markdown("**Analista: João Vitor de Souza | 3º Ano C.Comp**") 
+st.markdown("_• Coordenador: Prof. Luiz Jairo Dallaqua_") 
+st.markdown("_• Analista: João Vitor de Souza | 3º Ano C.Comp_") 
 
 # Filtro de datas
 st.sidebar.header("Filtros")
