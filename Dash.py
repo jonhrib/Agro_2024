@@ -117,8 +117,6 @@ if 'Data BR' not in filtered_data.columns:
 filtered_data['Data'] = filtered_data['Data BR']
 st.dataframe(filtered_data.drop(columns=['Data BR']))  # Exibe o dataframe sem a coluna 'Data BR'
 
-
-
 # Seleção de visualização
 st.sidebar.header("Visualizações")
 visualization_type = st.sidebar.selectbox(
@@ -196,99 +194,45 @@ if visualization_type == "Médias Mensais":
     pdf_path = "MédiasMensais_De_Commodities_E_Dólar.pdf"
     plt.savefig(pdf_path, format="pdf")
     st.download_button(
-        label="Baixar Médias Mensais em PDF",
+        label="Baixar Gráfico de Médias Mensais em PDF",
         data=open(pdf_path, "rb"),
         file_name="MédiasMensais_De_Commodities_E_Dólar.pdf",
         mime="application/pdf"
     )
 
-# Visualização: Média do Dólar em barras
-elif visualization_type == "Média do Dólar":
-    st.subheader("Média Mensal do Dólar")
+# Visualização: Tendência
+if visualization_type == "Tendências":
+    st.subheader("Tendência de Preços: Regressão Linear")
     
-    # Adicionar coluna 'Ano-Mês' com períodos mensais
-    filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
+    # Exemplo com "Soja" e "Dólar Compra"
+    x = np.array(filtered_data['Dólar Compra']).reshape(-1, 1)
+    y = np.array(filtered_data['Soja'])
 
-    # Selecionar somente as colunas de Dólar para cálculo de médias
-    dollar_columns = ['Dólar Compra', 'Dólar Venda']
-    dollar_monthly_means = (
-        filtered_data.groupby('Ano-Mês')[dollar_columns]
-        .mean()
-        .reset_index()
-    )
+    # Criar modelo de regressão linear
+    model = LinearRegression()
+    model.fit(x, y)
 
-    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
-    dollar_monthly_means['Ano-Mês'] = dollar_monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
+    # Predições
+    predicted = model.predict(x)
 
-    # Criar gráfico de barras para as médias mensais do dólar
-    fig, ax = plt.subplots(figsize=(12, 6))
-    dollar_monthly_means.set_index('Ano-Mês')[dollar_columns].plot(kind='bar', ax=ax)
-    
-    # Título e ajustes no gráfico
-    ax.set_title("Média Mensal do Dólar", fontsize=16)
-    ax.set_xlabel("Ano/Mês", fontsize=12)
-    ax.set_ylabel("Valor Médio (R$)", fontsize=12)
-    ax.legend(title="Tipo de Dólar", bbox_to_anchor=(1.05, 1), loc='upper left')
-    
-    # Exibir o gráfico na aplicação
+    # Plotando as tendências
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(filtered_data['Data'], y, label='Preço Soja', color='b')
+    ax.plot(filtered_data['Data'], predicted, label='Tendência (Regressão)', color='r', linestyle='--')
+    ax.set_title('Tendência de Preços de Soja e Dólar', fontsize=16)
+    ax.set_xlabel('Data', fontsize=12)
+    ax.set_ylabel('Preço (R$)', fontsize=12)
+    ax.legend()
+
+    # Exibir o gráfico
     st.pyplot(fig)
 
-    # Salvar o gráfico como PDF
-    pdf_path = "Média_Mensal_Do_Dólar.pdf"
+    # Salvar gráfico como PDF
+    pdf_path = "Tendencia_Soja.pdf"
     plt.savefig(pdf_path, format="pdf")
     st.download_button(
-        label="Baixar Média Mensal do Dólar em PDF",
+        label="Baixar Tendência Soja em PDF",
         data=open(pdf_path, "rb"),
-        file_name="Média_Mensal_Do_Dólar.pdf",
+        file_name="Tendencia_Soja.pdf",
         mime="application/pdf"
     )
-
-
-
-# Visualização: Tendências
-elif visualization_type == "Tendências":
-    st.subheader("Tendências Mensais")
-    # Adicionar coluna 'Ano-Mês' com períodos mensais
-    filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
-
-    # Selecionar apenas colunas numéricas para cálculo de médias
-    numeric_columns = ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']
-    monthly_means = (
-        filtered_data.groupby('Ano-Mês')[numeric_columns]
-        .mean()
-        .reset_index()
-    )
-
-    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
-    monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
-
-    # Visualizar as tendências mensais no gráfico
-    st.line_chart(monthly_means.set_index('Ano-Mês'))
-
-# Visualização: Exportação de Dados
-elif visualization_type == "Exportação de Dados":
-    st.subheader("Exportação de Dados")
-    
-    # Exportar dados como CSV
-    csv_data = filtered_data_display.to_csv(index=False)
-    st.download_button(
-        label="Baixar Dados Filtrados como CSV",
-        data=csv_data,
-        file_name="dados_filtrados.csv",
-        mime="text/csv"
-    )
-    
-    # Exportar dados como PDF
-    if st.button("Exportar dados para PDF"):
-        if filtered_data_display.empty:
-            st.error("Não há dados para exportar!")
-        else:
-            # Passando o dataframe correto para a função
-            pdf_file = export_to_pdf(filtered_data_display)  # Certifique-se de que filtered_data_display contém os dados corretos
-            with open(pdf_file, "rb") as pdf:
-                st.download_button(
-                    label="Baixar PDF",
-                    data=pdf,
-                    file_name="dados_agro.pdf",
-                    mime="application/pdf",
-                )
