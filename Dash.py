@@ -117,7 +117,17 @@ st.subheader("Dados para Visualização:")
 st.write("Dados Filtrados (Commodities Selecionadas):")
 filtered_data_display = filtered_data_commodities.copy()
 filtered_data_display['Data'] = filtered_data_display['Data'].dt.strftime('%d/%m/%Y')  # Formato dd/mm/aaaa para exibição
-st.dataframe(filtered_data_display)  # Exibir tabela com data, commodities e dólar
+# Adicionar '(R$)' nas colunas relevantes para exibição
+filtered_data_display.rename(
+    columns={
+        'Soja': 'Soja (R$)',
+        'Milho': 'Milho (R$)',
+        'Trigo': 'Trigo (R$)',
+        'Dólar Compra': 'Dólar Compra (R$)',
+        'Dólar Venda': 'Dólar Venda (R$)'
+    },
+    inplace=True
+)
 st.write("Fontes: Cocamar Paraná e Banco Central do Brasil")
 
 # Seleção de visualização
