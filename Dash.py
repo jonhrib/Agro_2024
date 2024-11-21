@@ -53,7 +53,7 @@ def export_to_pdf(dataframe, filename="dados_agro.pdf"):
     return temp_pdf.name
 
 # Exemplo de uso no seu código Streamlit
-st.title("Dashboard Interativo: O Agro aplicado")
+st.title("Dashboard Interativo: O Agro Aplicado")
 
 # Carregar os dados
 file_path = "https://github.com/jonhrib/Agro_2024/raw/refs/heads/main/data/ATUALIZA%C3%87%C3%95ES_Final.xlsx"  # Substitua pelo caminho correto
