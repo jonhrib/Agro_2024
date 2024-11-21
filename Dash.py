@@ -98,14 +98,14 @@ final_filtered_data = filtered_data[
 
 # Exibe os dados filtrados
 st.write("Dados Filtrados:")
-#st.dataframe(final_filtered_data)
+st.dataframe(final_filtered_data)
 
 
 # Exibe dados filtrados com formatação BR
-st.write("Dados Filtrados:")
-filtered_data_display = filtered_data.copy()
-filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substitui para exibição
-st.dataframe(filtered_data_display.drop(columns=['Data BR']))
+#st.write("Dados Filtrados:")
+#filtered_data_display = filtered_data.copy()
+#filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substitui para exibição
+#st.dataframe(filtered_data_display.drop(columns=['Data BR']))
 
 # Seleção de visualização
 st.sidebar.header("Visualizações")
