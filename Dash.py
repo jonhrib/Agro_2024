@@ -56,7 +56,7 @@ def export_to_pdf(dataframe, filename="dados_agro.pdf"):
 st.title("Dashboard Interativo: O Agro aplicado")
 
 # Carregar os dados
-file_path = "C:\\Users\\jonhv\\Downloads\\ATUALIZAÇÕES_Final.xlsx"  # Substitua pelo caminho correto
+file_path = "https://github.com/jonhrib/Agro_2024/blob/main/ATUALIZAÇÕES_Final.xlsx"  # Substitua pelo caminho correto
 data = pd.read_excel(file_path, sheet_name="Página1")
 
 # Renomear colunas (ajustar conforme necessário)
