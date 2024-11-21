@@ -99,7 +99,9 @@ filtered_data_commodities = filtered_data[['Data'] + commodities_selected]
 st.write("Dados Filtrados (Commodities Selecionadas):")
 filtered_data_display = filtered_data_commodities.copy()
 filtered_data_display['Data'] = filtered_data_display['Data']  # Substituir para exibição
-st.dataframe(filtered_data_display.drop(columns=['Data']))  # Exibir tabela sem a coluna de data em BR
+
+filtered_data_display['Data BR'] = filtered_data_display['Data'].dt.strftime('%d/%m/%Y')  # Formato brasileiro
+st.dataframe(filtered_data_display[['Data BR', 'Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']])
 
 # Exibir dados filtrados com formatação BR
 #st.write("Dados Filtrados:")
