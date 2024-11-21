@@ -109,11 +109,14 @@ filtered_data = data[
 # Aplicar o filtro de commodities
 filtered_data = filtered_data[selected_commodities + [selected_dollar]]
 
-# Exibir os dados filtrados
-st.write("Dados Filtrados com Filtros Adicionais:")
-filtered_data_display = filtered_data.copy()
-filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substituir para exibição
+# Verificar se a coluna 'Data BR' existe, caso contrário, criar a coluna
+if 'Data BR' not in filtered_data_display.columns:
+    filtered_data_display['Data BR'] = filtered_data_display['Data'].dt.strftime('%d/%m/%Y')  # Adicionar a formatação correta
+
+# Agora, você pode substituir a coluna 'Data' pela 'Data BR' para exibição
+filtered_data_display['Data'] = filtered_data_display['Data BR']
 st.dataframe(filtered_data_display.drop(columns=['Data BR']))
+
 
 # Seleção de visualização
 st.sidebar.header("Visualizações")
