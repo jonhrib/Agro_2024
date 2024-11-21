@@ -93,7 +93,7 @@ commodities_selected = st.sidebar.multiselect(
 )
 
 # Filtrar os dados com base na seleção de commodities
-filtered_data_commodities = filtered_data[['Data'] + commodities]
+filtered_data_commodities = filtered_data[['Data'] + commodities_selected]
 
 # Exibir dados filtrados com formatação BR
 st.write("Dados Filtrados (Commodities Selecionadas):")
