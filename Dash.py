@@ -93,6 +93,7 @@ st.markdown("""
 - Visualizar Tendências
 - Exportar dados em PDF
 """)
+st.markdown("---") 
 
 # Filtro de datas
 st.sidebar.header("Filtros")
@@ -111,6 +112,7 @@ commodities_selected = st.sidebar.multiselect(
 # Filtrar os dados com base na seleção de commodities
 filtered_data_commodities = filtered_data[['Data'] + commodities_selected + ['Dólar Compra', 'Dólar Venda']]
 
+st.subheader("Dados para Visualização:")
 # Exibir dados filtrados com formatação BR
 st.write("Dados Filtrados (Commodities Selecionadas):")
 filtered_data_display = filtered_data_commodities.copy()
