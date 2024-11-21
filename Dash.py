@@ -7,12 +7,13 @@ import numpy as np
 import tempfile
 from fpdf import FPDF
 
+# Função para gerar o PDF
 def export_to_pdf(dataframe, filename="dados_agro.pdf"):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    # Adiciona marca d'água
+    # Adicionar marca d'água
     pdf.set_font("Arial", "B", 40)
     pdf.set_text_color(200, 200, 200)  # Cor cinza claro para a marca d'água
     page_width = pdf.w - 2 * pdf.l_margin  # Largura da página menos as margens
@@ -20,9 +21,9 @@ def export_to_pdf(dataframe, filename="dados_agro.pdf"):
     pdf.rotate(45, 60, 190)  # Rotaciona a marca d'água para diagonal
     watermark_text = "Projeto Agrícola - Unespar"
     txt_width = pdf.get_string_width(watermark_text)
-    pdf.rotate(0)  # Restaura a rotação da página em geral
-    x = (page_width - txt_width) / 2 + pdf.l_margin  # Centraliza horizontalmente
-    y = (page_height) / 2 + pdf.t_margin  # Centraliza verticalmente
+    pdf.rotate(0)  # Restaura a rotação
+    x = (page_width - txt_width) / 2 + pdf.l_margin  # Centralizar horizontalmente
+    y = (page_height) / 2 + pdf.t_margin  # Centralizar verticalmente
     pdf.text(x, y, watermark_text)
 
     # Título do relatório
@@ -31,42 +32,34 @@ def export_to_pdf(dataframe, filename="dados_agro.pdf"):
     pdf.cell(200, 10, txt="Relatório de Dados - Variações dos Agro Commodities e Dólar", ln=True, align='C')
     pdf.ln(10)  # Espaçamento entre título e tabela
 
-    # Cria cabeçalho da tabela
+    # Criar cabeçalho da tabela
     pdf.set_font("Arial", size=10, style="B")
-    col_width = (page_width - 4) / len(dataframe.columns)  # Largura das células, considerando as margens de 2 centímetros cada
+    col_width = (page_width - 4) / len(dataframe.columns)  # Largura das células, considerando as margens
     for col in dataframe.columns:
         pdf.cell(col_width, 10, str(col), border=1, align='C')
         
     pdf.ln()
 
-    # Adiciona os dados do DataFrame ao PDF
+    # Adicionar os dados do DataFrame ao PDF
     pdf.set_font("Arial", size=10)
     for index, row in dataframe.iterrows():
         for value in row:
             pdf.cell(col_width, 10, str(value), border=1, align='C')
         pdf.ln()
 
-    # Salva PDF em um arquivo temporário
+    # Salvar PDF em um arquivo temporário
     temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     pdf.output(temp_pdf.name)
     return temp_pdf.name
-    
-st.markdown("""
-    <style>
-        body {
-            background-color: #4CAF50;  /* Cor verde */
-        }
-    </style>
-""", unsafe_allow_html=True)
 
+# Exemplo de uso no seu código Streamlit
+st.title("Dashboard Interativo: O Agro aplicado")
 
-st.title("Dashboard Interativo: O Agro Aplicado")
-
-# Carrega os dados
-file_path = "https://github.com/jonhrib/Agro_2024/raw/refs/heads/main/data/ATUALIZA%C3%87%C3%95ES_Final.xlsx"
+# Carregar os dados
+file_path = "https://github.com/jonhrib/Agro_2024/raw/refs/heads/main/data/ATUALIZA%C3%87%C3%95ES_Final.xlsx"  # Substitua pelo caminho correto
 data = pd.read_excel(file_path, sheet_name="Página1")
 
-# Renomea colunas (ajustar conforme necessário)
+# Renomear colunas (ajustar conforme necessário)
 columns_mapping = {
     'DATA': 'Data',
     'SOJA': 'Soja',
@@ -86,54 +79,16 @@ for col in ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']:
     data[col] = pd.to_numeric(data[col], errors='coerce')
 
 # Filtro de datas
-st.sidebar.header("Filtro de Data")
-start_date = st.sidebar.date_input("Data de início", data['Data'].min())
-end_date = st.sidebar.date_input("Data de término", data['Data'].max())
+st.sidebar.header("Filtros")
+start_date = st.sidebar.date_input("Data Inicial", data['Data'].min())
+end_date = st.sidebar.date_input("Data Final", data['Data'].max())
+filtered_data = data[(data['Data'] >= pd.Timestamp(start_date)) & (data['Data'] <= pd.Timestamp(end_date))]
 
-# Filtra os dados de acordo com o intervalo de datas
-filtered_data = data[(data['Data'] >= pd.to_datetime(start_date)) & (data['Data'] <= pd.to_datetime(end_date))]
-
-# Filtros adicionais
-st.sidebar.header("Filtros Adicionais")
-
-# Filtro por commodities
-commodities = st.sidebar.multiselect(
-    "Selecione as Commodities", 
-    options=['Soja', 'Milho', 'Trigo'],
-    default=['Soja', 'Milho', 'Trigo']
-)
-
-# Filtro por Ano
-years = filtered_data['Data'].dt.year.unique()
-selected_year = st.sidebar.selectbox("Selecione o Ano", options=years)
-
-# Filtro por Mês
-selected_month = st.sidebar.selectbox("Selecione o Mês", options=filtered_data['Data'].dt.month_name().unique())
-
-# Aplica o filtro de ano e mês
-filtered_data_by_year_month = filtered_data[
-    (filtered_data['Data'].dt.year == selected_year) & 
-    (filtered_data['Data'].dt.month_name() == selected_month)
-]
-
-# Verifica se as commodities selecionadas existem no DataFrame
-valid_commodities = [commodity for commodity in commodities if commodity in filtered_data_by_year_month.columns]
-
-# Aplica o filtro de commodities
-filtered_commodities = filtered_data_by_year_month[valid_commodities]
-
-# Colunas a serem exibidas
-columns_to_show = ['Data', 'Dólar Compra', 'Dólar Venda'] + valid_commodities
-
-# Exibe as colunas Data, Dólar Compra e Dólar Venda junto com os dados filtrados
-st.write("Dados Filtrados com Dólar de Compra e Venda:")
-st.dataframe(filtered_commodities[columns_to_show])
-
-# Exibe dados filtrados com formatação BR
-#st.write("Dados Filtrados:")
-#filtered_data_display = filtered_data.copy()
-#filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substitui para exibição
-#st.dataframe(filtered_data_display.drop(columns=['Data BR']))
+# Exibir dados filtrados com formatação BR
+st.write("Dados Filtrados:")
+filtered_data_display = filtered_data.copy()
+filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substituir para exibição
+st.dataframe(filtered_data_display.drop(columns=['Data BR']))
 
 # Seleção de visualização
 st.sidebar.header("Visualizações")
@@ -146,10 +101,10 @@ visualization_type = st.sidebar.selectbox(
 if visualization_type == "Correlação":
     st.subheader("Mapa de Calor de Correlação")
     
-    # Calcula a matriz de correlação
+    # Calcular a matriz de correlação
     correlation_matrix = filtered_data[['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']].corr()
 
-    # Cria o mapa de calor
+    # Criar o mapa de calor
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.heatmap(
         correlation_matrix,
@@ -163,10 +118,10 @@ if visualization_type == "Correlação":
     )
     ax.set_title("Mapa de Calor: Correlações Diárias", fontsize=16)
     
-    # Exibe o gráfico na aplicação
+    # Exibir o gráfico na aplicação
     st.pyplot(fig)
 
-    # Salva o gráfico como PDF
+    # Salvar o gráfico como PDF
     pdf_path = "MapaDeCalor_CorrelaçõesDiárias.pdf"
     plt.savefig(pdf_path, format="pdf")
     st.download_button(
@@ -180,10 +135,10 @@ if visualization_type == "Correlação":
 if visualization_type == "Médias Mensais":
     st.subheader("Médias Mensais de Preços: Commodities e Dólar")
     
-    # Adiciona coluna 'Ano-Mês' com períodos mensais
+    # Adicionar coluna 'Ano-Mês' com períodos mensais
     filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
 
-    # Seleciona as colunas numéricas para cálculo de médias
+    # Selecionar as colunas numéricas para cálculo de médias
     numeric_columns = ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']
     monthly_means = (
         filtered_data.groupby('Ano-Mês')[numeric_columns]
@@ -191,10 +146,10 @@ if visualization_type == "Médias Mensais":
         .reset_index()
     )
 
-    # Ajusta exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
+    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
     monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
 
-    # Cria gráfico de barras para as médias mensais
+    # Criar gráfico de barras para as médias mensais
     fig, ax = plt.subplots(figsize=(14, 8))
     monthly_means.set_index('Ano-Mês')[numeric_columns].plot(kind='bar', ax=ax, colormap='viridis')
 
@@ -205,10 +160,10 @@ if visualization_type == "Médias Mensais":
     ax.legend(title="Categorias", fontsize=10)
     ax.grid(axis='y', linestyle='--', alpha=0.7)
     
-    # Exibe o gráfico na aplicação
+    # Exibir o gráfico na aplicação
     st.pyplot(fig)
 
-    # Salva o gráfico como PDF
+    # Salvar o gráfico como PDF
     pdf_path = "MédiasMensais_De_Commodities_E_Dólar.pdf"
     plt.savefig(pdf_path, format="pdf")
     st.download_button(
@@ -222,10 +177,10 @@ if visualization_type == "Médias Mensais":
 elif visualization_type == "Média do Dólar":
     st.subheader("Média Mensal do Dólar")
     
-    # Adiciona coluna 'Ano-Mês' com períodos mensais
+    # Adicionar coluna 'Ano-Mês' com períodos mensais
     filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
 
-    # Seleciona somente as colunas de Dólar para cálculo de médias
+    # Selecionar somente as colunas de Dólar para cálculo de médias
     dollar_columns = ['Dólar Compra', 'Dólar Venda']
     dollar_monthly_means = (
         filtered_data.groupby('Ano-Mês')[dollar_columns]
@@ -233,10 +188,10 @@ elif visualization_type == "Média do Dólar":
         .reset_index()
     )
 
-    # Ajusta exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
+    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
     dollar_monthly_means['Ano-Mês'] = dollar_monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
 
-    # Cria gráfico de barras para as médias mensais do dólar
+    # Criar gráfico de barras para as médias mensais do dólar
     fig, ax = plt.subplots(figsize=(12, 6))
     dollar_monthly_means.set_index('Ano-Mês')[dollar_columns].plot(kind='bar', ax=ax)
     
@@ -246,10 +201,10 @@ elif visualization_type == "Média do Dólar":
     ax.set_ylabel("Valor Médio (R$)", fontsize=12)
     ax.legend(title="Tipo de Dólar", bbox_to_anchor=(1.05, 1), loc='upper left')
     
-    # Exibe o gráfico na aplicação
+    # Exibir o gráfico na aplicação
     st.pyplot(fig)
 
-    # Salva o gráfico como PDF
+    # Salvar o gráfico como PDF
     pdf_path = "Média_Mensal_Do_Dólar.pdf"
     plt.savefig(pdf_path, format="pdf")
     st.download_button(
@@ -264,10 +219,10 @@ elif visualization_type == "Média do Dólar":
 # Visualização: Tendências
 elif visualization_type == "Tendências":
     st.subheader("Tendências Mensais")
-    # Adiciona coluna 'Ano-Mês' com períodos mensais
+    # Adicionar coluna 'Ano-Mês' com períodos mensais
     filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
 
-    # Seleciona apenas colunas numéricas para cálculo de médias
+    # Selecionar apenas colunas numéricas para cálculo de médias
     numeric_columns = ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']
     monthly_means = (
         filtered_data.groupby('Ano-Mês')[numeric_columns]
@@ -275,17 +230,17 @@ elif visualization_type == "Tendências":
         .reset_index()
     )
 
-    # Ajusta exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
+    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
     monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
 
-    # Visualiza as tendências mensais no gráfico
+    # Visualizar as tendências mensais no gráfico
     st.line_chart(monthly_means.set_index('Ano-Mês'))
 
 # Visualização: Exportação de Dados
 elif visualization_type == "Exportação de Dados":
     st.subheader("Exportação de Dados")
     
-    # Exporta dados como CSV
+    # Exportar dados como CSV
     csv_data = filtered_data_display.to_csv(index=False)
     st.download_button(
         label="Baixar Dados Filtrados como CSV",
@@ -294,13 +249,13 @@ elif visualization_type == "Exportação de Dados":
         mime="text/csv"
     )
     
-    # Exporta dados como PDF
+    # Exportar dados como PDF
     if st.button("Exportar dados para PDF"):
         if filtered_data_display.empty:
             st.error("Não há dados para exportar!")
         else:
             # Passando o dataframe correto para a função
-            pdf_file = export_to_pdf(filtered_data_display)
+            pdf_file = export_to_pdf(filtered_data_display)  # Certifique-se de que filtered_data_display contém os dados corretos
             with open(pdf_file, "rb") as pdf:
                 st.download_button(
                     label="Baixar PDF",
