@@ -92,11 +92,20 @@ commodities_selected = st.sidebar.multiselect(
     default=['Soja', 'Milho', 'Trigo']  # Seleção padrão de todas as commodities
 )
 
+# Filtrar os dados com base na seleção de commodities
+filtered_data_commodities = filtered_data[['Data'] + commodities]
+
 # Exibir dados filtrados com formatação BR
-st.write("Dados Filtrados:")
-filtered_data_display = filtered_data.copy()
+st.write("Dados Filtrados (Commodities Selecionadas):")
+filtered_data_display = filtered_data_commodities.copy()
 filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substituir para exibição
-st.dataframe(filtered_data_display.drop(columns=['Data BR']))
+st.dataframe(filtered_data_display.drop(columns=['Data BR']))  # Exibir tabela sem a coluna de data em BR
+
+# Exibir dados filtrados com formatação BR
+#st.write("Dados Filtrados:")
+#filtered_data_display = filtered_data.copy()
+#filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substituir para exibição
+#st.dataframe(filtered_data_display.drop(columns=['Data BR']))
 
 # Seleção de visualização
 st.sidebar.header("Visualizações")
