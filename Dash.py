@@ -110,12 +110,13 @@ filtered_data = data[
 filtered_data = filtered_data[selected_commodities + [selected_dollar]]
 
 # Verificar se a coluna 'Data BR' existe, caso contrário, criar a coluna
-if 'Data BR' not in filtered_data_display.columns:
-    filtered_data_display['Data BR'] = filtered_data_display['Data'].dt.strftime('%d/%m/%Y')  # Adicionar a formatação correta
+if 'Data BR' not in filtered_data.columns:
+    filtered_data['Data BR'] = filtered_data['Data'].dt.strftime('%d/%m/%Y')  # Adicionar a formatação correta
 
 # Agora, você pode substituir a coluna 'Data' pela 'Data BR' para exibição
-filtered_data_display['Data'] = filtered_data_display['Data BR']
-st.dataframe(filtered_data_display.drop(columns=['Data BR']))
+filtered_data['Data'] = filtered_data['Data BR']
+st.dataframe(filtered_data.drop(columns=['Data BR']))  # Exibe o dataframe sem a coluna 'Data BR'
+
 
 
 # Seleção de visualização
