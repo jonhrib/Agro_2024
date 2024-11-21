@@ -84,6 +84,16 @@ st.markdown("_• Coordenador: Prof. Luiz Jairo Dallaqua_")
 st.markdown("_• Analista: João Vitor de Souza | 3º Ano C.Comp_")
 st.markdown("---") 
 
+st.subheader("Funcionalidades:")
+st.markdown("""
+- Visualizar coletas realizadas até o momento
+- Aplicar filtros personalizados nos dados
+- Visualizar correlações entre variáveis
+- Visualizar Média Mensal dos Agro Commodities e Dólar
+- Visualizar Tendências
+- Exportar dados em PDF
+""")
+
 # Filtro de datas
 st.sidebar.header("Filtros")
 start_date = st.sidebar.date_input("Data Inicial", data['Data'].min())
