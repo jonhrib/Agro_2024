@@ -78,6 +78,8 @@ data['Data BR'] = data['Data'].dt.strftime('%d/%m/%Y')  # Formato brasileiro: dd
 for col in ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']:
     data[col] = pd.to_numeric(data[col], errors='coerce')
 
+st.warning("Bem vindo ao Dashboard do Projeto Agrícola Unespar 2024.")
+
 st.markdown("**Dados advindos do Projeto Agrícola Unespar - 2024**")
 st.markdown("_• Coordenador: Prof. Luiz Jairo Dallaqua_") 
 st.markdown("_• Analista: João Vitor de Souza | 3º Ano C.Comp_")
