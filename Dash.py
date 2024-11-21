@@ -62,11 +62,11 @@ data = pd.read_excel(file_path, sheet_name="Página1")
 # Renomear colunas (ajustar conforme necessário)
 columns_mapping = {
     'DATA': 'Data',
-    'SOJA': 'Soja (R$)',
-    'MILHO': 'Milho (R$)',
-    'TRIGO': 'Trigo (R$)',
-    'COMPRA': 'Dólar Compra (R$)',
-    'VENDA': 'Dólar Venda (R$)'
+    'SOJA': 'Soja',
+    'MILHO': 'Milho',
+    'TRIGO': 'Trigo',
+    'COMPRA': 'Dólar Compra',
+    'VENDA': 'Dólar Venda'
 }
 data = data.rename(columns=columns_mapping)
 
