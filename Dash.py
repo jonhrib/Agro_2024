@@ -97,6 +97,14 @@ visualization_type = st.sidebar.selectbox(
     ["Correlação", "Médias Mensais", "Média do Dólar", "Tendências", "Exportação de Dados"]
 )
 
+# Filtro para selecionar as commodities a serem exibidas
+st.sidebar.header("Seleção de Commodities")
+commodities_selected = st.sidebar.multiselect(
+    "Escolha as commodities para exibir",
+    options=['Soja', 'Milho', 'Trigo'],
+    default=['Soja', 'Milho', 'Trigo']  # Seleção padrão de todas as commodities
+)
+
 # Visualização: Correlação
 if visualization_type == "Correlação":
     st.subheader("Mapa de Calor de Correlação")
