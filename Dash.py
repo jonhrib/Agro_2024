@@ -93,18 +93,13 @@ commodities_selected = st.sidebar.multiselect(
 )
 
 # Filtrar os dados com base na seleção de commodities
-filtered_data_commodities = filtered_data[['Data'] + commodities_selected]
+filtered_data_commodities = filtered_data[['Data'] + commodities_selected + ['Dólar Compra', 'Dólar Venda']]
 
 # Exibir dados filtrados com formatação BR
 st.write("Dados Filtrados (Commodities Selecionadas):")
 filtered_data_display = filtered_data_commodities.copy()
 filtered_data_display['Data'] = filtered_data_display['Data']  # Substituir para exibição
-
-# Exibir dados filtrados com formatação BR
-#st.write("Dados Filtrados:")
-#filtered_data_display = filtered_data.copy()
-#filtered_data_display['Data'] = filtered_data_display['Data BR']  # Substituir para exibição
-#st.dataframe(filtered_data_display.drop(columns=['Data BR']))
+st.dataframe(filtered_data_display)  # Exibir tabela com data, commodities e dólar
 
 # Seleção de visualização
 st.sidebar.header("Visualizações")
@@ -196,26 +191,26 @@ elif visualization_type == "Média do Dólar":
     # Adicionar coluna 'Ano-Mês' com períodos mensais
     filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
 
-    # Selecionar somente as colunas de Dólar para cálculo de médias
-    dollar_columns = ['Dólar Compra', 'Dólar Venda']
-    dollar_monthly_means = (
-        filtered_data.groupby('Ano-Mês')[dollar_columns]
+    # Calcular a média mensal do dólar
+    monthly_dollar_mean = (
+        filtered_data.groupby('Ano-Mês')[['Dólar Compra', 'Dólar Venda']]
         .mean()
         .reset_index()
     )
 
-    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
-    dollar_monthly_means['Ano-Mês'] = dollar_monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
+    # Ajustar exibição de 'Ano-Mês' para formato string
+    monthly_dollar_mean['Ano-Mês'] = monthly_dollar_mean['Ano-Mês'].dt.strftime('%b/%Y')
 
-    # Criar gráfico de barras para as médias mensais do dólar
+    # Criar gráfico de barras para o dólar
     fig, ax = plt.subplots(figsize=(12, 6))
-    dollar_monthly_means.set_index('Ano-Mês')[dollar_columns].plot(kind='bar', ax=ax)
-    
+    monthly_dollar_mean.set_index('Ano-Mês')[['Dólar Compra', 'Dólar Venda']].plot(kind='bar', ax=ax, color=['blue', 'orange'])
+
     # Título e ajustes no gráfico
-    ax.set_title("Média Mensal do Dólar", fontsize=16)
+    ax.set_title("Média Mensal do Dólar - Compra e Venda", fontsize=16)
     ax.set_xlabel("Ano/Mês", fontsize=12)
-    ax.set_ylabel("Valor Médio (R$)", fontsize=12)
-    ax.legend(title="Tipo de Dólar", bbox_to_anchor=(1.05, 1), loc='upper left')
+    ax.set_ylabel("Valor (R$)", fontsize=12)
+    ax.legend(title="Tipo de Dólar", fontsize=10)
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
     
     # Exibir o gráfico na aplicação
     st.pyplot(fig)
@@ -230,52 +225,14 @@ elif visualization_type == "Média do Dólar":
         mime="application/pdf"
     )
 
-
-
-# Visualização: Tendências
-elif visualization_type == "Tendências":
-    st.subheader("Tendências Mensais")
-    # Adicionar coluna 'Ano-Mês' com períodos mensais
-    filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
-
-    # Selecionar apenas colunas numéricas para cálculo de médias
-    numeric_columns = ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']
-    monthly_means = (
-        filtered_data.groupby('Ano-Mês')[numeric_columns]
-        .mean()
-        .reset_index()
-    )
-
-    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
-    monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
-
-    # Visualizar as tendências mensais no gráfico
-    st.line_chart(monthly_means.set_index('Ano-Mês'))
-
-# Visualização: Exportação de Dados
-elif visualization_type == "Exportação de Dados":
-    st.subheader("Exportação de Dados")
+# Exemplo de exportação para PDF
+if visualization_type == "Exportação de Dados":
+    st.subheader("Exportar Dados em PDF")
     
-    # Exportar dados como CSV
-    csv_data = filtered_data_display.to_csv(index=False)
+    pdf_file = export_to_pdf(filtered_data_commodities)
     st.download_button(
-        label="Baixar Dados Filtrados como CSV",
-        data=csv_data,
-        file_name="dados_filtrados.csv",
-        mime="text/csv"
+        label="Baixar Dados em PDF",
+        data=open(pdf_file, "rb"),
+        file_name="dados_agro.pdf",
+        mime="application/pdf"
     )
-    
-    # Exportar dados como PDF
-    if st.button("Exportar dados para PDF"):
-        if filtered_data_display.empty:
-            st.error("Não há dados para exportar!")
-        else:
-            # Passando o dataframe correto para a função
-            pdf_file = export_to_pdf(filtered_data_display)  # Certifique-se de que filtered_data_display contém os dados corretos
-            with open(pdf_file, "rb") as pdf:
-                st.download_button(
-                    label="Baixar PDF",
-                    data=pdf,
-                    file_name="dados_agro.pdf",
-                    mime="application/pdf",
-                )
