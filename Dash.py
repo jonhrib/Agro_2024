@@ -85,11 +85,21 @@ data['Data BR'] = data['Data'].dt.strftime('%d/%m/%Y')  # Formato brasileiro
 for col in ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']:
     data[col] = pd.to_numeric(data[col], errors='coerce')
 
-# Filtro de datas
-st.sidebar.header("Filtros")
-start_date = st.sidebar.date_input("Data Inicial", data['Data'].min())
-end_date = st.sidebar.date_input("Data Final", data['Data'].max())
-filtered_data = data[(data['Data'] >= pd.Timestamp(start_date)) & (data['Data'] <= pd.Timestamp(end_date))]
+# Aplica todos os filtros
+final_filtered_data = filtered_data[
+    (filtered_data['Data'] >= pd.Timestamp(start_date)) & 
+    (filtered_data['Data'] <= pd.Timestamp(end_date)) & 
+    (filtered_data['Data'].dt.year == selected_year) &
+    (filtered_data['Data'].dt.month_name() == selected_month) &
+    (filtered_data[commodities] >= min_value) &
+    (filtered_data[commodities] <= max_value) &
+    (filtered_data[dollar_type] > 0)
+]
+
+# Exibe os dados filtrados
+st.write("Dados Filtrados:")
+#st.dataframe(final_filtered_data)
+
 
 # Exibe dados filtrados com formatação BR
 st.write("Dados Filtrados:")
