@@ -276,12 +276,12 @@ elif visualization_type == "Tendências":
     st.line_chart(monthly_means.set_index('Ano-Mês'))
 
 # Visualização: Tendências com Curva de Gauss
-elif visualization_type == "Curva de Gauss":
+elif visualization_type == "Tendências":
     st.subheader("Tendências Mensais com Curva de Gauss")
-
+    
     # Adicionar coluna 'Ano-Mês' com períodos mensais
     filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
-
+    
     # Selecionar apenas colunas numéricas para cálculo de médias
     numeric_columns = ['Soja', 'Milho', 'Trigo']
     monthly_means = (
@@ -290,39 +290,57 @@ elif visualization_type == "Curva de Gauss":
         .reset_index()
     )
 
-    # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
+    # Ajustar exibição de 'Ano-Mês' para formato string
     monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
 
-    # Visualizar as tendências mensais no gráfico
-    fig, ax = plt.subplots(figsize=(12, 6))
+    # Criar o gráfico com tendências e curvas de Gauss
+    fig, ax = plt.subplots(figsize=(12, 8))
 
-    # Gráficos de linha para as tendências
     for commodity in numeric_columns:
+        # Plotar as tendências das commodities
         ax.plot(
-            monthly_means.index,
+            monthly_means['Ano-Mês'],
             monthly_means[commodity],
-            label=f"Tendência {commodity}",
+            label=f'Tendência: {commodity}',
             marker='o'
         )
         
-        # Adicionar Curva de Gauss
-        mean = monthly_means[commodity].mean()
-        std = monthly_means[commodity].std()
-        x = np.linspace(monthly_means.index.min(), monthly_means.index.max(), 100)
-        gauss_curve = (1 / (std * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mean) / std) ** 2)
-        ax.plot(x, gauss_curve * std * 10, linestyle='--', alpha=0.7, label=f"Gauss {commodity}")
-
-    # Ajustar rótulos e título
-    ax.set_xticks(monthly_means.index)
-    ax.set_xticklabels(monthly_means['Ano-Mês'], rotation=45)
-    ax.set_title("Tendências Mensais com Curva de Gauss", fontsize=16)
+        # Calcular média e desvio padrão da commodity
+        mean_value = monthly_means[commodity].mean()
+        std_dev = monthly_means[commodity].std()
+        
+        # Gerar valores para a curva de Gauss
+        x_vals = np.linspace(
+            monthly_means[commodity].min(),
+            monthly_means[commodity].max(),
+            500
+        )
+        gauss_curve = (
+            1 / (std_dev * np.sqrt(2 * np.pi)) *
+            np.exp(-0.5 * ((x_vals - mean_value) / std_dev) ** 2)
+        )
+        
+        # Normalizar a curva de Gauss para caber no gráfico
+        gauss_curve_scaled = gauss_curve * max(monthly_means[commodity]) * 0.1
+        
+        # Sobrepor a curva ao gráfico
+        ax.plot(
+            x_vals,
+            gauss_curve_scaled,
+            linestyle='--',
+            label=f'Curva Gauss: {commodity}'
+        )
+    
+    # Configurações do gráfico
+    ax.set_title("Tendências Mensais com Curvas de Gauss", fontsize=16)
     ax.set_xlabel("Ano/Mês", fontsize=12)
-    ax.set_ylabel("Preço Médio (R$)", fontsize=12)
-    ax.legend(title="Categorias", fontsize=10)
+    ax.set_ylabel("Valores", fontsize=12)
+    ax.legend(fontsize=10)
     ax.grid(axis='y', linestyle='--', alpha=0.7)
-
-    # Exibir o gráfico na aplicação
+    
+    # Exibir o gráfico
     st.pyplot(fig)
+
 
 
 # Exemplo de exportação para PDF
