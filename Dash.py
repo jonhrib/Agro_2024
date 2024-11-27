@@ -135,7 +135,7 @@ st.write("Fontes: Cocamar Paraná e Banco Central do Brasil")
 st.sidebar.header("Visualizações")
 visualization_type = st.sidebar.selectbox(
     "Selecione o tipo de visualização",
-    ["Correlação", "Médias Mensais", "Média do Dólar", "Tendências", "Curva de Gauss", "Exportação de Dados"]
+    ["Correlação", "Médias Mensais", "Média do Dólar", "Tendências", "Distribuição Estatística", "Exportação de Dados"]
 )
 
 # Visualização: Correlação
@@ -275,71 +275,40 @@ elif visualization_type == "Tendências":
     # Visualizar as tendências mensais no gráfico
     st.line_chart(monthly_means.set_index('Ano-Mês'))
 
-# Visualização: Tendências com Curva de Gauss
-elif visualization_type == "Curva de Gauss":
-    st.subheader("Tendências Mensais com Curva de Gauss")
-    
-    # Adicionar coluna 'Ano-Mês' com períodos mensais
-    filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
-    
-    # Selecionar apenas colunas numéricas para cálculo de médias
+# Visualização: Boxplots por Commodity
+elif visualization_type == "Distribuição Estatística":
+    st.subheader("Distribuição Estatística das Commodities (Boxplots)")
+
+    # Filtrar colunas relevantes
     numeric_columns = ['Soja', 'Milho', 'Trigo']
-    monthly_means = (
-        filtered_data.groupby('Ano-Mês')[numeric_columns]
-        .mean()
-        .reset_index()
+    
+    # Criar DataFrame no formato longo (necessário para seaborn)
+    long_format_data = filtered_data.melt(
+        id_vars=['Data'],
+        value_vars=numeric_columns,
+        var_name="Commodity",
+        value_name="Valor"
     )
 
-    # Ajustar exibição de 'Ano-Mês' para formato string
-    monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
+    # Criar boxplots com seaborn
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.boxplot(
+        data=long_format_data,
+        x="Commodity",
+        y="Valor",
+        palette="Set2",
+        ax=ax
+    )
 
-    # Criar o gráfico com tendências e curvas de Gauss
-    fig, ax = plt.subplots(figsize=(12, 8))
-
-    for commodity in numeric_columns:
-        # Plotar as tendências das commodities
-        ax.plot(
-            monthly_means['Ano-Mês'],
-            monthly_means[commodity],
-            label=f'Tendência: {commodity}',
-            marker='o'
-        )
-        
-        # Calcular média e desvio padrão da commodity
-        mean_value = monthly_means[commodity].mean()
-        std_dev = monthly_means[commodity].std()
-        
-        # Gerar valores para a curva de Gauss
-        x_vals = np.linspace(
-            monthly_means[commodity].min(),
-            monthly_means[commodity].max(),
-            500
-        )
-        gauss_curve = (
-            1 / (std_dev * np.sqrt(2 * np.pi)) *
-            np.exp(-0.5 * ((x_vals - mean_value) / std_dev) ** 2)
-        )
-        
-        # Normalizar a curva de Gauss para caber no gráfico
-        gauss_curve_scaled = gauss_curve * max(monthly_means[commodity]) * 0.1
-        
-        # Sobrepor a curva ao gráfico
-        ax.plot(
-            x_vals,
-            gauss_curve_scaled,
-            linestyle='--',
-            label=f'Curva Gauss: {commodity}'
-        )
-    
     # Configurações do gráfico
-    ax.set_title("Tendências Mensais com Curvas de Gauss", fontsize=16)
-    ax.set_xlabel("Ano/Mês", fontsize=12)
-    ax.set_ylabel("Valores", fontsize=12)
-    ax.legend(fontsize=10)
+    ax.set_title("Distribuição Estatística por Commodity", fontsize=16)
+    ax.set_xlabel("Commodity", fontsize=12)
+    ax.set_ylabel("Valor", fontsize=12)
     ax.grid(axis='y', linestyle='--', alpha=0.7)
-    
+
     # Exibir o gráfico
     st.pyplot(fig)
+
 
 
 
