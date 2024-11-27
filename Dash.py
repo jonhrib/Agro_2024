@@ -276,7 +276,7 @@ elif visualization_type == "Tendências":
     st.line_chart(monthly_means.set_index('Ano-Mês'))
 
 # Visualização: Tendências com Curva de Gauss
-elif visualization_type == "Tendências":
+elif visualization_type == "Curva de Gauss":
     st.subheader("Tendências Mensais com Curva de Gauss")
     
     # Adicionar coluna 'Ano-Mês' com períodos mensais
