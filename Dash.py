@@ -275,41 +275,41 @@ elif visualization_type == "Tendências":
     # Visualizar as tendências mensais no gráfico
     st.line_chart(monthly_means.set_index('Ano-Mês'))
 
-# Visualização: Boxplots por Commodity
-elif visualization_type == "Distribuição Estatística":
-    st.subheader("Distribuição Estatística das Commodities (Boxplots)")
+# Visualização: Intervalo de Confiança
+elif visualization_type == "Intervalo de Confiança":
+    st.subheader("Intervalo de Confiança dos Valores Médios")
 
-    # Filtrar colunas relevantes
     numeric_columns = ['Soja', 'Milho', 'Trigo']
-    
-    # Criar DataFrame no formato longo (necessário para seaborn)
-    long_format_data = filtered_data.melt(
-        id_vars=['Data'],
-        value_vars=numeric_columns,
-        var_name="Commodity",
-        value_name="Valor"
-    )
-
-    # Criar boxplots com seaborn
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.boxplot(
-        data=long_format_data,
-        x="Commodity",
-        y="Valor",
-        palette="Set2",
-        ax=ax
-    )
+
+    for commodity in numeric_columns:
+        # Agrupar por mês e calcular média e erro padrão
+        grouped_data = (
+            filtered_data
+            .groupby(filtered_data['Data'].dt.to_period("M"))[commodity]
+            .agg(['mean', 'sem'])  # 'sem' é o erro padrão
+            .reset_index()
+        )
+        grouped_data['Data'] = grouped_data['Data'].dt.to_timestamp()
+
+        # Intervalo de confiança
+        ax.plot(grouped_data['Data'], grouped_data['mean'], label=f'{commodity}: Média')
+        ax.fill_between(
+            grouped_data['Data'],
+            grouped_data['mean'] - 1.96 * grouped_data['sem'],
+            grouped_data['mean'] + 1.96 * grouped_data['sem'],
+            alpha=0.2
+        )
 
     # Configurações do gráfico
-    ax.set_title("Distribuição Estatística por Commodity", fontsize=16)
-    ax.set_xlabel("Commodity", fontsize=12)
+    ax.set_title("Intervalos de Confiança para as Médias Mensais", fontsize=16)
+    ax.set_xlabel("Data", fontsize=12)
     ax.set_ylabel("Valor", fontsize=12)
+    ax.legend(fontsize=10)
     ax.grid(axis='y', linestyle='--', alpha=0.7)
 
     # Exibir o gráfico
     st.pyplot(fig)
-
-
 
 
 # Exemplo de exportação para PDF
