@@ -135,7 +135,7 @@ st.write("Fontes: Cocamar Paraná e Banco Central do Brasil")
 st.sidebar.header("Visualizações")
 visualization_type = st.sidebar.selectbox(
     "Selecione o tipo de visualização",
-    ["Correlação", "Médias Mensais", "Média do Dólar", "Tendências", "Distribuição Estatística", "Exportação de Dados"]
+    ["Correlação", "Médias Mensais", "Média do Dólar", "Tendências", "Intervalo de Confiança", "Exportação de Dados"]
 )
 
 # Visualização: Correlação
