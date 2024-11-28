@@ -258,6 +258,7 @@ if visualization_type == "Média do Dólar":
 # Visualização: Tendências
 elif visualization_type == "Tendências":
     st.subheader("Tendências Mensais")
+    
     # Adicionar coluna 'Ano-Mês' com períodos mensais
     filtered_data['Ano-Mês'] = filtered_data['Data'].dt.to_period('M')
 
@@ -269,11 +270,15 @@ elif visualization_type == "Tendências":
         .reset_index()
     )
 
+    # Ordenar os dados por 'Ano-Mês' (mantendo o tipo PeriodIndex para ordenação cronológica correta)
+    monthly_means = monthly_means.sort_values(by='Ano-Mês')
+
     # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
     monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.strftime('%b/%Y')
 
     # Visualizar as tendências mensais no gráfico
     st.line_chart(monthly_means.set_index('Ano-Mês'))
+
 
 
 # Exemplo de exportação para PDF
