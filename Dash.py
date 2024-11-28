@@ -270,7 +270,8 @@ elif visualization_type == "Tendências":
         .reset_index()
     )
 
-    # Ordenar os dados por 'Ano-Mês' (mantendo o tipo PeriodIndex para ordenação cronológica correta)
+    # Ordenar os dados por 'Ano-Mês' (convertendo a coluna 'Ano-Mês' para o tipo datetime para ordenação correta)
+    monthly_means['Ano-Mês'] = monthly_means['Ano-Mês'].dt.to_timestamp()  # Converte para timestamp para ordenação correta
     monthly_means = monthly_means.sort_values(by='Ano-Mês')
 
     # Ajustar exibição de 'Ano-Mês' para formato string (exemplo: "2024-01" -> "Jan/2024")
@@ -278,6 +279,7 @@ elif visualization_type == "Tendências":
 
     # Visualizar as tendências mensais no gráfico
     st.line_chart(monthly_means.set_index('Ano-Mês'))
+
 
 
 
