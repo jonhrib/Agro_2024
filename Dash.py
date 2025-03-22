@@ -81,7 +81,7 @@ for col in ['Soja', 'Milho', 'Trigo', 'Dólar Compra', 'Dólar Venda']:
 st.success("Bem vindo ao Dashboard do Projeto Agrícola Unespar 2025!")
 
 st.markdown("_• Coordenador: Prof. Luiz Jairo Dallaqua_") 
-st.markdown("_• Analista: João Vitor de Souza | 3º Ano C.Comp_")
+st.markdown("_• Analista: João Vitor de Souza | 4º Ano C.Comp_")
 st.markdown("---") 
 
 st.subheader("Funcionalidades:")
